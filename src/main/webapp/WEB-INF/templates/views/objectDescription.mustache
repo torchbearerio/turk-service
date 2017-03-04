@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>Object Description</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/imgareaselect-default.css"/>
+    <script src="/static/scripts/objectDescription.js">Function()</script>
+    <!-- <script async="true" defer="true" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXyMat0qa3WpiXmjsm7k3x21IGHQlrkv8&amp;callback=initMap">Function()</script> -->
+    <script type="text/javascript">
+        window.previewMode = '{{assignmentId}}' === 'ASSIGNMENT_ID_NOT_AVAILABLE';
+        window.rectangle = {
+            x1: {{rect_x1}},
+            x2: {{rect_x2}},
+            y1: {{rect_y1}},
+            y2: {{rect_y2}}
+        };
+        window.selectedPoint = {
+            lat: {{lat}},
+            long: {{long}},
+            bearing: {{bearing}}
+        };
+    </script>
+</head>
+
+<body>
+<div id="left-column">
+    <div class="questionPart">
+        <!-- Placeholder -->
+    </div>
+
+    <form class="turkForm" action="https://workersandbox.mturk.com/mturk/externalSubmit" method="POST">
+        <input type="hidden" name="assignmentId" value="{{assignmentId}}"/>
+        <input type="hidden" id="description" name="description"/>
+    </form>
+</div>
+
+<div id="right-column">
+    <canvas id="streetviewCanvas" class="streetView"></canvas>
+</div>
+<div class="clear"></div>
+
+</body>
+</html>
