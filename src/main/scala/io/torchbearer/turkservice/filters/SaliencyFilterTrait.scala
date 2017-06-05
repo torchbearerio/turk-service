@@ -7,5 +7,5 @@ import io.torchbearer.ServiceCore.tyoes.Rectangle
   */
 
 trait SaliencyFilterTrait {
-  def runFilter(): List[Rectangle]
+  def runFilter(): List[Set[Rectangle]]
 }

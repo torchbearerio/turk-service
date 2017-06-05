@@ -11,6 +11,9 @@ import sbtassembly.{MergeStrategy, PathList}
 import com.earldouglas.xwp.JettyPlugin
 import com.earldouglas.xwp.JettyPlugin.autoImport._
 import com.earldouglas.xwp.ContainerPlugin.autoImport._
+import sbtdocker.DockerPlugin.autoImport._
+import sbtdocker.DockerKeys.{docker, dockerfile}
+import sbtdocker.DockerPlugin
 
 object TurkServiceBuild extends Build {
   val Organization = "io.torchbearer"
@@ -41,12 +44,28 @@ object TurkServiceBuild extends Build {
     mainClass in assembly := Some("io.torchbearer.turkservice.JettyLauncher")
   )
 
+  // ------------------------------------------
+  // Docker Builder
+  // ------------------------------------------
+  val dockerSettings = dockerfile in docker := {
+    // The assembly task generates a fat JAR file
+    val artifact: File = assembly.value
+    val artifactTargetPath = s"/target/${artifact.name}"
+
+    new Dockerfile {
+      from("java")
+      add("build.jar", artifactTargetPath)
+      expose(41012)
+      entryPoint("java", "-jar", artifactTargetPath)
+    }
+  }
+
   lazy val core = ProjectRef(file("../service-core"), "service-core")
 
   lazy val project = Project(
     "turk-service",
     file("."),
-    settings = ScalatraPlugin.scalatraSettings ++ scalateSettings ++ tsAssemblySettings ++ Seq(
+    settings = ScalatraPlugin.scalatraSettings ++ scalateSettings ++ dockerSettings ++ tsAssemblySettings ++ Seq(
       organization := Organization,
       name := Name,
       version := Version,
@@ -66,7 +85,7 @@ object TurkServiceBuild extends Build {
         "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
         "com.typesafe.akka" %% "akka-actor" % "2.3.4",
         "net.databinder.dispatch" %% "dispatch-core" % "0.11.1",
-        "com.amazonaws" % "aws-java-sdk-osgi" % "1.11.48" withSources(),
+        "com.amazonaws" % "aws-java-sdk-osgi" % "1.11.119" withSources(),
         "com.github.haifengl" % "smile-core" % "1.2.0",
         "com.github.haifengl" %% "smile-scala" % "1.2.0",
         "org.scalatra" %% "scalatra-json" % ScalatraVersion,
@@ -102,5 +121,8 @@ object TurkServiceBuild extends Build {
       },
       mainClass in(Compile, run) := Some("io.torchbearer.turkservice.JettyLauncher")
     )
-  ).dependsOn(core).enablePlugins(JettyPlugin)
+  )
+    .dependsOn(core)
+    .enablePlugins(JettyPlugin)
+    .enablePlugins(DockerPlugin)
 }

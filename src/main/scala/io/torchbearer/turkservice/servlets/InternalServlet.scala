@@ -2,7 +2,7 @@ package io.torchbearer.turkservice.servlets
 
 import io.torchbearer.ServiceCore.DataModel.ExecutionPoint
 import io.torchbearer.ServiceCore.TorchbearerDB._
-import io.torchbearer.turkservice.{HitService, TurkClientFactory, TurkServiceStack}
+import io.torchbearer.turkservice.{TurkClientFactory, TurkServiceStack}
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json.JacksonJsonSupport

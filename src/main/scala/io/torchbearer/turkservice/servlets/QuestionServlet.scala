@@ -1,17 +1,13 @@
 package io.torchbearer.turkservice.servlets
 
 import akka.actor.ActorSystem
-import io.torchbearer.ServiceCore.DataModel.ExecutionPoint._
-import io.torchbearer.ServiceCore.DataModel.SaliencyHit
-import io.torchbearer.ServiceCore.tyoes.Rectangle
-import io.torchbearer.turkservice.TurkServiceStack
-import io.torchbearer.turkservice.nlp.DescriptorResult
+import io.torchbearer.ServiceCore.DataModel.{ExecutionPoint, Hit}
+import io.torchbearer.turkservice.{Constants, TurkServiceStack}
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json.JacksonJsonSupport
 import org.scalatra.{AsyncResult, CorsSupport, ErrorHandler, FutureSupport}
-import io.torchbearer.turkservice.nlp.QueryBuilder._
-
 import scala.concurrent.{ExecutionContext, Future}
+import io.torchbearer.ServiceCore.{Constants => CoreConstants}
 
 class QuestionServlet(system: ActorSystem) extends TurkServiceStack with FutureSupport with CorsSupport
   with JacksonJsonSupport {
@@ -31,62 +27,44 @@ class QuestionServlet(system: ActorSystem) extends TurkServiceStack with FutureS
 
   /** ******** Object Sampling ***********/
 
-  get("/objectsampling") {
-    val assignmentId = params('assignmentId)
-    val lat = params('lat).toFloat
-    val long = params('long).toFloat
-    val bearing = params('bearing).toInt
-
-    new AsyncResult() {
-      val is = Future {
-        contentType = "text/html"
-        mustache("/objectSampling.mustache",
-          "instruction" -> "first right turn",
-          "assignmentId" -> assignmentId,
-          "lat" -> lat,
-          "long" -> long,
-          "bearing" -> bearing)
-      }
-    }
-  }
-
-  /** ******** Object Description ***********/
-
-  get("/objectdescription") {
-    val assignmentId = params('assignmentId)
-    val lat = params('lat).toFloat
-    val long = params('long).toFloat
-    val bearing = params('bearing).toInt
-    val saliencyHitId = params('saliencyHitId).toString
+  get(s"/${Constants.SALIENCY_INTERNAL_IDENTIFIER}") {
+    val assignmentId = params.getOrElse('assignmentId, 'ASSIGNMENT_ID_NOT_AVAILABLE)
+    val hitId = params.get('hitId).map(_.toInt)
+      .getOrElse({
+        halt(409, "No hit found!")
+      })
 
     new AsyncResult() {
       val is = Future {
         // Get rectangle from saliency hit
-        val rect: Rectangle = SaliencyHit.getSaliencyHit(saliencyHitId).flatMap(_.rectangle)
-            .getOrElse({halt(409, "No saliency hit found!")})
+        val hit = Hit.getHit(hitId)
+          .getOrElse({
+            halt(409, "No hit found!")
+          })
+        val executionPoint = ExecutionPoint.getExecutionPoint(hit.executionPointId)
+          .getOrElse({
+            halt(409, s"Execution point ${hit.executionPointId} not found!")
+          })
+        val instruction = executionPoint.executionPointType match {
+          case CoreConstants.EXECUTION_POINT_TYPE_MANEUVER =>
+            "Imagine you are telling someone who is driving to turn at this intersection." +
+              "Draw a box just around the landmark you would use to describe this location--" +
+              "the <strong>most obvious, most stand-out, most important, and/or easiest-to-see</strong> object in the image." +
+              "<br/> " +
+              "<span style='color:red'><strong>DON'T select objects which are temporary, such as people or cars.</strong></span>"
+          case CoreConstants.EXECUTION_POINT_TYPE_DESTINATION_RIGHT
+               | CoreConstants.EXECUTION_POINT_TYPE_DESTINATION_LEFT =>
+            "Draw a box just around the main feature of this image--" +
+              "the landmark or object that is most <strong>obvious</strong> or <strong>important</strong>."
+        }
 
         contentType = "text/html"
-        mustache("/objectDescription.mustache",
-          "instruction" -> "first right turn",
+        mustache("/saliency.mustache",
+          "instruction" -> instruction,
           "assignmentId" -> assignmentId,
-          "lat" -> lat,
-          "long" -> long,
-          "bearing" -> bearing,
-          "rect_x1" -> rect.x1,
-          "rect_x2" -> rect.x2,
-          "rect_y1" -> rect.y1,
-          "rect_y2" -> rect.y2)
-      }
-    }
-  }
-
-  post("/objectdescription/next") {
-    val results = parsedBody.extract[List[DescriptorResult]]
-
-    new AsyncResult() {
-      val is = Future {
-        contentType = formats("json")
-        getNextQuestion(results)
+          "submitURL" -> Constants.EXTERNAL_QUESTION_SUBMIT_URL,
+          "streetviewImgURL" -> s"${Constants.STREETVIEW_IMAGES_BASE_URL}/${hit.executionPointId}.jpg"
+        )
       }
     }
   }

@@ -19,9 +19,12 @@ $(document).ready(function() {
 });
 
 var handleSelectionChanged = function(img, selection) {
+    var btn = $("#submitBtn");
+    btn.prop("disabled", false);
+
     var form = $('.turkForm');
-    form.find("input[name='x1']").val(selection.x1 / img.naturalWidth);
-    form.find("input[name='x2']").val(selection.x2 / img.naturalWidth);
-    form.find("input[name='y1']").val(selection.y1 / img.naturalHeight);
-    form.find("input[name='y2']").val(selection.y2 / img.naturalHeight);
+    form.find("input[name='x1']").val(selection.x1);
+    form.find("input[name='x2']").val(selection.x2);
+    form.find("input[name='y1']").val(selection.y1);
+    form.find("input[name='y2']").val(selection.y2);
 };
