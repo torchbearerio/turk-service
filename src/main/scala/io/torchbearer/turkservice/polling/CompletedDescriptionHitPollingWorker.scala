@@ -3,18 +3,14 @@ package io.torchbearer.turkservice.polling
 import akka.actor.ActorSystem
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, Message, ReceiveMessageRequest}
 import io.torchbearer.ServiceCore.AWSServices.SQS
-import io.torchbearer.ServiceCore.DataModel.{Hit, Landmark, ObjectDescriptionAssignment, SaliencyAssignment}
-import io.torchbearer.ServiceCore.tyoes.Rectangle
+import io.torchbearer.ServiceCore.DataModel.{Landmark, ObjectDescriptionAssignment, SaliencyAssignment}
 import io.torchbearer.turkservice.hitprocessing.DescriptionResultProcessor
-import io.torchbearer.turkservice.hitprocessing.DescriptionResultProcessor._
-import io.torchbearer.turkservice.hitprocessing.DescriptionResultProcessor._
-import io.torchbearer.turkservice.{Constants, SaliencyResultProcessor, TurkClientFactory}
+import io.torchbearer.turkservice.{Constants, TurkClientFactory}
 import org.json4s.DefaultFormats
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future, blocking}
-import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 
 /**
