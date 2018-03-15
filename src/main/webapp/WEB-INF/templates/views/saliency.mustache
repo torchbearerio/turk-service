@@ -11,23 +11,41 @@
 </head>
 
 <body>
-<div id="left-column">
-    <!-- Unescaped HTMl=L via triple brackets -->
+<div id="top">
+    <!-- Unescaped HTMl via triple brackets -->
     {{{instruction}}}
     <br/>
     <br/>
     <form class="turkForm" action="{{submitURL}}" method="POST">
         <input type="hidden" name="assignmentId" value="{{assignmentId}}"/>
-        <input type="hidden" name="x1"/>
-        <input type="hidden" name="x2"/>
-        <input type="hidden" name="y1"/>
-        <input type="hidden" name="y2"/>
-        <input type="submit" id="submitBtn" class="button blue" value="Submit"/>
+        <input type="hidden" name="x1_at" value="0"/>
+        <input type="hidden" name="x2_at" value="0"/>
+        <input type="hidden" name="y1_at" value="0"/>
+        <input type="hidden" name="y2_at" value="0"/>
+        <input type="hidden" name="x1_justBefore" value="0"/>
+        <input type="hidden" name="x2_justBefore" value="0"/>
+        <input type="hidden" name="y1_justBefore" value="0"/>
+        <input type="hidden" name="y2_justBefore" value="0"/>
+        <input type="hidden" name="x1_before" value="0"/>
+        <input type="hidden" name="x2_before" value="0"/>
+        <input type="hidden" name="y1_before" value="0"/>
+        <input type="hidden" name="y2_before" value="0"/>
+        <input type="submit" id="submitBtn" class="button blue" disabled="disabled" value="Submit"/>
     </form>
 </div>
 
-<div id="right-column">
-    <img id="streetView" src="{{streetviewImgURL}}"/>
+<div id="images">
+    {{#streetviewImgURLAt}}
+        <img id="streetViewAt" src="{{streetviewImgURLAt}}"/>
+    {{/streetviewImgURLAt}}
+
+    {{#streetviewImgURLJustBefore}}
+        <img id="streetViewJustBefore" src="{{streetviewImgURLJustBefore}}"/>
+    {{/streetviewImgURLJustBefore}}
+
+    {{#streetviewImgURLBefore}}
+        <img id="streetViewBefore" src="{{streetviewImgURLBefore}}"/>
+    {{/streetviewImgURLBefore}}
 </div>
 <div class="clear"></div>
 

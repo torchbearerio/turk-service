@@ -35,7 +35,7 @@ $(document).ready(function() {
 function drawStreetviewCanvas() {
     var r = window.rectangle;
     var selectedPoint = window.selectedPoint;
-    var rightColumn = $("#right-column");
+    var rightColumn = $("#images");
 
     var canvas = document.getElementById('streetviewCanvas');
     var ctx = canvas.getContext('2d');

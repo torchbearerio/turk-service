@@ -2,7 +2,8 @@ package io.torchbearer.turkservice.polling
 
 import akka.actor.ActorSystem
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, Message, ReceiveMessageRequest}
-import io.torchbearer.ServiceCore.AWSServices.SQS
+import io.torchbearer.ServiceCore.AWSServices.{MechTurk, SQS}
+import io.torchbearer.ServiceCore.AWSServices.MechTurk._
 import io.torchbearer.ServiceCore.DataModel.{Hit, Landmark, ObjectDescriptionAssignment, SaliencyAssignment}
 import io.torchbearer.ServiceCore.tyoes.Rectangle
 import io.torchbearer.turkservice._
@@ -23,14 +24,14 @@ class CompletedVerificationHitPollingWorker(system: ActorSystem) extends Runnabl
   implicit val formats = DefaultFormats
 
   private val logger = LoggerFactory.getLogger(this.getClass)
-  private val turkClient = TurkClientFactory.getClient
+  private val turkClient = MechTurk.getClient
 
   // Build SQS client
   private val sqsClient = SQS.getClient
   private val request = new ReceiveMessageRequest(Constants.SQS_HIT_VERIFICATION_URL)
   request.setWaitTimeSeconds(20)
 
-  logger.debug("SQS client built for hit completion.")
+  log("SQS client built for verification hit completion.")
 
   override def run(): Unit = {
     while (true) {
@@ -39,9 +40,9 @@ class CompletedVerificationHitPollingWorker(system: ActorSystem) extends Runnabl
   }
 
   private def processSQSMessages(): Unit = {
-    log("Polling task running: VERIFICATION HITS.")
     val messages: Seq[Message] = sqsClient.receiveMessage(request).getMessages
-    log(s"Received ${messages.length} hit completion messages")
+    if (messages.nonEmpty)
+      log(s"Received ${messages.length} hit completion messages")
 
     messages.foreach((m: Message) => {
       val handle = m.getReceiptHandle
@@ -54,7 +55,7 @@ class CompletedVerificationHitPollingWorker(system: ActorSystem) extends Runnabl
           val turkAssignemnts = turkClient.getAllAssignmentsForHIT(hitId)
 
           // Retrieve Landmark corresponding to Hit
-          val landmark = Landmark.getLandmarkByDescriptionHitId(hitId) getOrElse {
+          val landmark = Landmark.getLandmarkByVerificationHitId(hitId) getOrElse {
             println(s"Unable to load landmark for external hitId $hitId")
             return
           }
@@ -77,8 +78,6 @@ class CompletedVerificationHitPollingWorker(system: ActorSystem) extends Runnabl
         }
       }
     })
-
-    log("Polling task complete.")
   }
 
   private def log(message: String) = {

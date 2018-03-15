@@ -2,13 +2,14 @@ package io.torchbearer.turkservice.polling
 
 import akka.actor.ActorSystem
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, Message, ReceiveMessageRequest}
-import io.torchbearer.ServiceCore.AWSServices.SQS
+import io.torchbearer.ServiceCore.AWSServices.{SQS, MechTurk}
+import io.torchbearer.ServiceCore.AWSServices.MechTurk._
 import io.torchbearer.ServiceCore.DataModel.{Hit, ObjectDescriptionAssignment, SaliencyAssignment}
 import io.torchbearer.ServiceCore.tyoes.Rectangle
 import io.torchbearer.turkservice.hitprocessing.DescriptionResultProcessor._
 import io.torchbearer.turkservice.hitprocessing.DescriptionResultProcessor._
 import io.torchbearer.turkservice.hitprocessing.SaliencyResultProcessor
-import io.torchbearer.turkservice.{Constants, TurkClientFactory}
+import io.torchbearer.turkservice.Constants
 import org.json4s.DefaultFormats
 import org.slf4j.LoggerFactory
 
@@ -26,14 +27,14 @@ class CompletedSaliencyHitPollingWorker(system: ActorSystem) extends Runnable {
   implicit val formats = DefaultFormats
 
   private val logger = LoggerFactory.getLogger(this.getClass)
-  private val turkClient = TurkClientFactory.getClient
+  private val turkClient = MechTurk.getClient
 
   // Build SQS client
   private val sqsClient = SQS.getClient
   private val request = new ReceiveMessageRequest(Constants.SQS_HIT_SALIENCY_URL)
   request.setWaitTimeSeconds(20)
 
-  logger.debug("SQS client built for hit completion.")
+  log("SQS client built for saliency hit completion.")
 
   override def run(): Unit = {
     while (true) {
@@ -42,9 +43,9 @@ class CompletedSaliencyHitPollingWorker(system: ActorSystem) extends Runnable {
   }
 
   private def processSQSMessages(): Unit = {
-    log("Polling task running: SALIENCY HITS.")
     val messages: Seq[Message] = sqsClient.receiveMessage(request).getMessages
-    log(s"Received ${messages.length} saliency hit completion messages")
+    if (messages.nonEmpty)
+      log(s"Received ${messages.length} saliency hit completion messages")
 
     messages.foreach((m: Message) => {
       val handle = m.getReceiptHandle
@@ -56,7 +57,7 @@ class CompletedSaliencyHitPollingWorker(system: ActorSystem) extends Runnable {
 
           val turkAssignemnts = turkClient.getAllAssignmentsForHIT(hitId)
 
-          // Retrieve internal hit using the MTurk hitIf
+          // Retrieve internal hit using the MTurk hitId
           val hit = Hit.getHitBySaliencyHitId(hitId) getOrElse {
             println(s"Unable to load hit for external hitId $hitId")
             return
@@ -67,12 +68,25 @@ class CompletedSaliencyHitPollingWorker(system: ActorSystem) extends Runnable {
             val answerXML = scala.xml.XML.loadString(m.getAnswer) \ "Answer"
             val rectPoints = answerXML.map(a => {
               val k = (a \ "QuestionIdentifier").text
-              val v = (a \ "FreeText").text
+              val v = (a \ "FreeText").text.toInt
               (k, v)
             }).toMap
-            new SaliencyAssignment(m.getAssignmentId, hit.hitId, 0, Some(Rectangle(rectPoints)), Some(m.getWorkerId), None)
+
+            val atRect = Rectangle(rectPoints("x1_at"), rectPoints("x2_at"), rectPoints("y1_at"), rectPoints("y2_at"))
+            val beforeRect = Rectangle(rectPoints("x1_before"), rectPoints("x2_before"), rectPoints("y1_before"),
+              rectPoints("y2_before"))
+            val justBeforeRect = Rectangle(rectPoints("x1_justBefore"), rectPoints("x2_justBefore"),
+              rectPoints("y1_justBefore"), rectPoints("y2_justBefore"))
+
+            val duration = m.getAcceptTime.getTime - m.getSubmitTime.getTime
+
+            new SaliencyAssignment(m.getAssignmentId, hit.hitId, duration,
+              Some(atRect),
+              Some(justBeforeRect),
+              Some(beforeRect),
+              Some(m.getWorkerId), None)
           })
-          SaliencyResultProcessor.processSaliencyAssignemntsForHit(hit, assignments.toList)
+          SaliencyResultProcessor.processSaliencyAssignemntsForHit(hit, assignments)
         }
       })
 
@@ -84,8 +98,6 @@ class CompletedSaliencyHitPollingWorker(system: ActorSystem) extends Runnable {
         }
       }
     })
-
-    log("Saliency polling task complete.")
   }
 
   private def log(message: String) = {

@@ -94,7 +94,7 @@ object TurkServiceBuild extends Build {
         "ca.juliusdavies" % "not-yet-commons-ssl" % "0.3.9",
         "commons-io" % "commons-io" % "2.5",
         "org.jgrapht" % "jgrapht-core" % "0.9.2",
-        "edu.mit" % "jwi" % "2.2.3",
+        "org.scalanlp" % "breeze_2.11" % "0.13.1",
         "net.ettinsmoor" % "java-aws-mturk" % "1.6.2" excludeAll(
           ExclusionRule(organization = "org.apache.commons", name = "not-yet-commons-ssl"),
           ExclusionRule(organization = "apache-xerces", name = "resolver"),

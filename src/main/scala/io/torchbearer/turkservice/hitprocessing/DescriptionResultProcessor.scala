@@ -34,6 +34,7 @@ object DescriptionResultProcessor {
     val finalDescriptorSet = filteredDescriptors.head
     */
 
+    // There willl always only be one assignment
     val assignment = assignments.head
     val description = assignment.description getOrElse ""
 
@@ -41,11 +42,16 @@ object DescriptionResultProcessor {
     ObjectDescriptionAssignment.insertDescriptionAssignments(assignments)
 
     // Update Landmark in DB
-    // Pass tuple of (description from turk, 1.0) since we are "entirely confident" in this answer
-    landmark.updateDescription((description, 1.0))
+    landmark.updateDescription(description)
 
     // Initiate verification hit on MechTurk
     val verificationQuestion = TurkQuestionFactory.createDescriptionVerificationQuestion(landmark.landmarkId, description)
     verificationQuestion.submit()
+
+    // Update hit cost
+    Hit.incrementCost(landmark.hitId, (verificationQuestion.reward * 100).toInt)
+
+    // Update landmark with this verification external hit id
+    Landmark.updateVerificationHitIdForLandmark(landmark.landmarkId, verificationQuestion.mechTurkHitId)
   }
 }

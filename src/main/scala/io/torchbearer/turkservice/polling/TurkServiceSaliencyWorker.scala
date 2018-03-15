@@ -28,7 +28,7 @@ class TurkServiceSaliencyWorker(system: ActorSystem) extends Runnable {
       val task = getTaskForActivityArn(Constants.ActivityARNs("TURK_SALIENCY"))
 
       // If no tasks were returned, exit
-      if (task.getTaskToken != "") {
+      if (task.getTaskToken != null) {
 
         val input = parse(task.getInput)
         val epId = (input \ "epId").extract[Int]

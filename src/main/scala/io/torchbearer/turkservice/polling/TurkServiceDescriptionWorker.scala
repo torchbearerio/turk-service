@@ -24,14 +24,14 @@ class TurkServiceDescriptionWorker(system: ActorSystem) extends Runnable {
   override def run(): Unit = {
     //val descTask = new TurkDescriptionTask(437, 57, "wefewfwf")
     //descTask.run()
-    val verificationQuestion = TurkQuestionFactory.createDescriptionVerificationQuestion("f5c2a65c-5ec1-4f7c-8cea-fa74e935017d", "grey house")
-    verificationQuestion.submit()
+    //val verificationQuestion = TurkQuestionFactory.createDescriptionVerificationQuestion("f5c2a65c-5ec1-4f7c-8cea-fa74e935017d", "grey house")
+    //verificationQuestion.submit()
 
     while (true) {
       val task = getTaskForActivityArn(Constants.ActivityARNs("TURK_DESCRIPTION"))
 
       // If no tasks were returned, exit
-      if (task.getTaskToken != "") {
+      if (task.getTaskToken != null) {
 
         val input = parse(task.getInput)
         val epId = (input \ "epId").extract[Int]

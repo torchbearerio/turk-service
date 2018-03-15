@@ -2,10 +2,11 @@ package io.torchbearer.turkservice.polling
 
 import akka.actor.ActorSystem
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, Message, ReceiveMessageRequest}
-import io.torchbearer.ServiceCore.AWSServices.SQS
+import io.torchbearer.ServiceCore.AWSServices.{SQS, MechTurk}
+import io.torchbearer.ServiceCore.AWSServices.MechTurk._
 import io.torchbearer.ServiceCore.DataModel.{Landmark, ObjectDescriptionAssignment, SaliencyAssignment}
 import io.torchbearer.turkservice.hitprocessing.DescriptionResultProcessor
-import io.torchbearer.turkservice.{Constants, TurkClientFactory}
+import io.torchbearer.turkservice.Constants
 import org.json4s.DefaultFormats
 import org.slf4j.LoggerFactory
 
@@ -22,14 +23,14 @@ class CompletedDescriptionHitPollingWorker(system: ActorSystem) extends Runnable
   implicit val formats = DefaultFormats
 
   private val logger = LoggerFactory.getLogger(this.getClass)
-  private val turkClient = TurkClientFactory.getClient
+  private val turkClient = MechTurk.getClient
 
   // Build SQS client
   private val sqsClient = SQS.getClient
   private val request = new ReceiveMessageRequest(Constants.SQS_HIT_DESCRIPTION_URL)
   request.setWaitTimeSeconds(20)
 
-  logger.debug("SQS client built for description hit completion.")
+  log("SQS client built for description hit completion.")
 
   override def run(): Unit = {
     while (true) {
@@ -38,9 +39,9 @@ class CompletedDescriptionHitPollingWorker(system: ActorSystem) extends Runnable
   }
 
   private def processSQSMessages(): Unit = {
-    log("Polling task running: DESCRIPTION HITS.")
     val messages: Seq[Message] = sqsClient.receiveMessage(request).getMessages
-    log(s"Received ${messages.length} description hit completion messages")
+    if (messages.nonEmpty)
+      log(s"Received ${messages.length} description hit completion messages")
 
     messages.foreach((m: Message) => {
       val handle = m.getReceiptHandle
@@ -54,7 +55,8 @@ class CompletedDescriptionHitPollingWorker(system: ActorSystem) extends Runnable
 
           // Retrieve Landmark corresponding to Hit
           val landmark = Landmark.getLandmarkByDescriptionHitId(hitId) getOrElse {
-             return println(s"Unable to load landmark for external hitId $hitId")
+            println(s"Unable to load landmark for external hitId $hitId")
+            return
           }
 
           // Map assignments to List of (key, value) maps
@@ -64,7 +66,7 @@ class CompletedDescriptionHitPollingWorker(system: ActorSystem) extends Runnable
             new ObjectDescriptionAssignment(m.getAssignmentId, landmark.landmarkId, 0,
               Some(description), Some(m.getWorkerId), None)
           })
-          DescriptionResultProcessor.processDescriptionAssignmentsForLandmark(landmark, assignments.toList)
+          DescriptionResultProcessor.processDescriptionAssignmentsForLandmark(landmark, assignments)
         }
       })
 
@@ -76,8 +78,6 @@ class CompletedDescriptionHitPollingWorker(system: ActorSystem) extends Runnable
         }
       }
     })
-
-    log("Saliency polling task complete.")
   }
 
   private def log(message: String) = {

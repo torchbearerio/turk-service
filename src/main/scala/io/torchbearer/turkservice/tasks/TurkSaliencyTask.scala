@@ -12,6 +12,8 @@ class TurkSaliencyTask(epId: Int, hitId: Int, taskToken: String)
 
   override def run(): Unit = {
     try {
+      println(s"Creating saliency task for hit $hitId")
+
       val task = TurkQuestionFactory.createSaliencyQuestion(epId, hitId)
       task.submit()
 
@@ -19,12 +21,18 @@ class TurkSaliencyTask(epId: Int, hitId: Int, taskToken: String)
       Hit.updateSaliencyHitIdForHit(hitId, task.mechTurkHitId)
 
       // Update taskToken for hit in database, so we can send success once we get answer
-      Hit.updateTaskTokenForHit(hitId, taskToken)
+      Hit.updateHitWithTask(hitId, taskToken)
 
+      // Update cost
+      Hit.incrementCost(hitId, (task.reward * 100).toInt)
+
+      println(s"Created saliency task with id ${task.mechTurkHitId} for hit $hitId")
     }
     catch {
-      case _: Throwable => sendFailure("Turk Service Error", "Error creating saliency task")
+      case e: Throwable => {
+        e.printStackTrace()
+        sendFailure("Turk Service error", e.getMessage)
+      }
     }
   }
-
 }

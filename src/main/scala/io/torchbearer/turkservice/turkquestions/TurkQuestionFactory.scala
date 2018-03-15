@@ -1,7 +1,7 @@
 package io.torchbearer.turkservice.turkquestions
 
 import io.torchbearer.ServiceCore.Utils._
-import io.torchbearer.turkservice.{Constants, TurkClientFactory}
+import io.torchbearer.turkservice.Constants
 
 
 object TurkQuestionFactory {
@@ -34,7 +34,8 @@ object TurkQuestionFactory {
       Constants.SALIENCY_REWARD,
       Constants.SALIENCY_ASSIGNMENT_COUNT,
       Constants.SALIENCY_KEYWORDS,
-      questionXml
+      questionXml,
+      Constants.SQS_HIT_SALIENCY_URL
     )
   }
 
@@ -89,7 +90,8 @@ object TurkQuestionFactory {
       //Constants.DESCRIPTION_ASSIGNMENT_COUNT,
       1,
       Constants.DESCRIPTION_KEYWORDS,
-      questionXml
+      questionXml,
+      Constants.SQS_HIT_DESCRIPTION_URL
     )
   }
 
@@ -155,7 +157,8 @@ object TurkQuestionFactory {
       //Constants.VERIFICATION_ASSIGNMENT_COUNT,
       1,
       Constants.VERIFICATION_KEYWORDS,
-      questionXml
+      questionXml,
+      Constants.SQS_HIT_VERIFICATION_URL
     )
   }
 }
