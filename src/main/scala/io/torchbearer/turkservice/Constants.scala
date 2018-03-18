@@ -17,7 +17,7 @@ object Constants {
   // val EXTERNAL_QUESTION_BASE_URL = "https://turkservice.torchbearer.io/question"
   val EXTERNAL_QUESTION_BASE_URL: String = if (sys.env.getOrElse("ENVIRONMENT", "production") == "development")
    // "https://torchbearer.dev/question"
-    "https://7de60506.ngrok.io/question"
+    "https://03697cc9.ngrok.io/question"
   else
     "https://turkservice.torchbearer.io/question"
 
@@ -35,7 +35,7 @@ object Constants {
   val SALIENCY_INTERNAL_IDENTIFIER = "saliency"
   val SALIENCY_TITLE = "Image Landmark Selection"
   val SALIENCY_DESCRIPTION = "Draw a box around the most prominent feature in an image"
-  val SALIENCY_ASSIGNMENT_COUNT = 1
+  val SALIENCY_ASSIGNMENT_COUNT = 5
   val SALIENCY_REWARD = 0.05
   val SALIENCY_KEYWORDS = "image annotation,image tagging,directions,navigation"
 

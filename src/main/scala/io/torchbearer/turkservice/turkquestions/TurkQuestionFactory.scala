@@ -55,6 +55,7 @@ object TurkQuestionFactory {
           <QuestionContent>
             <Text>
               Provide a detailed description of the object in the RED BOX.
+              Describe PERMANENT, MAN-MADE things--NOT cars, people or things that could move.
               Pretend you were using that object as a landmark when giving someone directions.
             </Text>
             <EmbeddedBinary>
@@ -87,8 +88,7 @@ object TurkQuestionFactory {
       Constants.DESCRIPTION_TITLE,
       Constants.DESCRIPTION_DESCRIPTION,
       Constants.DESCRIPTION_REWARD,
-      //Constants.DESCRIPTION_ASSIGNMENT_COUNT,
-      1,
+      Constants.DESCRIPTION_ASSIGNMENT_COUNT,
       Constants.DESCRIPTION_KEYWORDS,
       questionXml,
       Constants.SQS_HIT_DESCRIPTION_URL
@@ -154,8 +154,7 @@ object TurkQuestionFactory {
       Constants.VERIFICATION_TITLE,
       Constants.VERIFICATION_DESCRIPTION,
       Constants.VERIFICATION_REWARD,
-      //Constants.VERIFICATION_ASSIGNMENT_COUNT,
-      1,
+      Constants.VERIFICATION_ASSIGNMENT_COUNT,
       Constants.VERIFICATION_KEYWORDS,
       questionXml,
       Constants.SQS_HIT_VERIFICATION_URL

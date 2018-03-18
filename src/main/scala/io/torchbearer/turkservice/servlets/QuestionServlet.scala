@@ -50,15 +50,18 @@ class QuestionServlet(system: ActorSystem) extends TurkServiceStack with FutureS
         val instruction = executionPoint.executionPointType match {
           case CoreConstants.EXECUTION_POINT_TYPE_MANEUVER =>
             "Imagine you are telling someone who is driving to turn at this intersection. " +
-            "The images below show the approach to an intersection or turn from different distances." +
             "In each of the three images below, draw a box just around the landmark you would use to describe this location--" +
               "the <strong>most obvious, most stand-out, most important, and/or easiest-to-see</strong> object in the image." +
               "<br/> " +
-              "<strong style='color:red !important;'>DON'T select objects which are temporary, such as people or cars.</strong>"
+              "<strong style='color:red !important; font-size: 1.25em !important;'>DON'T select objects that can move, such as people or cars, or trees. </strong>" +
+              "<strong style='color:green !important; font-size: 1.25em !important;'>DO select permanent objects such as building, signs, or crosswalks.</strong>"
+
           case CoreConstants.EXECUTION_POINT_TYPE_DESTINATION_RIGHT
                | CoreConstants.EXECUTION_POINT_TYPE_DESTINATION_LEFT =>
             "Draw a box just around the main feature of this image--" +
-              "the landmark or object that is most <strong>obvious</strong> or <strong>important</strong>."
+              "the landmark or object that is most <strong>obvious</strong> or <strong>important</strong>." +
+              "<strong style='color:red !important; font-size: 1.25em !important;'>DON'T select objects that can move, such as people or cars, or trees. </strong>" +
+              "<strong style='color:green !important; font-size: 1.25em !important;'>DO select permanent objects such as building, signs, or crosswalks.</strong>"
         }
 
         contentType = "text/html"
