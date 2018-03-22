@@ -101,9 +101,9 @@ class QuestionServlet(system: ActorSystem) extends TurkServiceStack with FutureS
             "instruction" -> instruction,
             "assignmentId" -> assignmentId,
             "submitURL" -> Constants.EXTERNAL_QUESTION_SUBMIT_URL,
-            "streetviewImgURLAt" -> getSVImageURL(hit.executionPointId, CoreConstants.POSITION_AT).orNull,
-            "streetviewImgURLJustBefore" -> getSVImageURL(hit.executionPointId, CoreConstants.POSITION_JUST_BEFORE).orNull,
-            "streetviewImgURLBefore" -> getSVImageURL(hit.executionPointId, CoreConstants.POSITION_BEFORE).orNull
+            "streetviewImgURLAt" -> getSVImageURL(hitId, CoreConstants.POSITION_AT).orNull,
+            "streetviewImgURLJustBefore" -> getSVImageURL(hitId, CoreConstants.POSITION_JUST_BEFORE).orNull,
+            "streetviewImgURLBefore" -> getSVImageURL(hitId, CoreConstants.POSITION_BEFORE).orNull
           )
         }
       }
@@ -116,12 +116,12 @@ class QuestionServlet(system: ActorSystem) extends TurkServiceStack with FutureS
 
   override def error(handler: ErrorHandler): Unit = ???
 
-  private def getSVImageURL(epId: Int, position: String): Option[String] = {
+  private def getSVImageURL(hitId: Int, position: String): Option[String] = {
     val s3 = S3.getClient
     val b = CoreConstants.S3_SV_IMAGE_BUCKET
-    val key = s"${epId}_$position.jpg"
+    val key = s"${hitId}_$position.jpg"
     if (s3.doesObjectExist(b, key)) {
-      Some(s"${Constants.STREETVIEW_IMAGES_BASE_URL}/${epId}_$position.jpg")
+      Some(s"${Constants.STREETVIEW_IMAGES_BASE_URL}/$key")
     }
     else {
       None
