@@ -14,6 +14,8 @@ class TurkSaliencyTask(epId: Int, hitId: Int, taskToken: String)
     try {
       println(s"Creating saliency task for hit $hitId")
 
+      Hit.setStartTimeForTask(hitId, "turk_saliency", System.currentTimeMillis)
+
       val task = TurkQuestionFactory.createSaliencyQuestion(epId, hitId)
       task.submit()
 

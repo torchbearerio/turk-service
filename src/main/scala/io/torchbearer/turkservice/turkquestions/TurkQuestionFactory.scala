@@ -35,51 +35,24 @@ object TurkQuestionFactory {
       Constants.SALIENCY_ASSIGNMENT_COUNT,
       Constants.SALIENCY_KEYWORDS,
       questionXml,
-      Constants.SQS_HIT_SALIENCY_URL
+      Constants.SQS_HIT_SALIENCY_URL,
+      assingmentDuration = Constants.SALIENCY_DURATION
     )
   }
 
   def createDescriptionQuestion(landmarkId: String): TurkQuestion = {
-    val landmarkImageUrl = s"${Constants.LANDMARK_MARKED_IMAGES_BASE_URL}/$landmarkId.png"
+    val baseUrl = s"${Constants.EXTERNAL_QUESTION_BASE_URL}/${Constants.DESCRIPTION_INTERNAL_IDENTIFIER}"
+    val url = formatURLWithQueryParams(baseUrl,
+      "landmarkId" -> landmarkId
+    )
 
     val rawQuestionXml =
-      <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
-        <Overview>
-          <Title>
-            Describe the outlined area of the image
-          </Title>
-        </Overview>
-        <Question>
-          <QuestionIdentifier>description</QuestionIdentifier>
-          <IsRequired>true</IsRequired>
-          <QuestionContent>
-            <Text>
-              Provide a detailed description of the object in the RED BOX.
-              Describe PERMANENT, MAN-MADE things--NOT cars, people or things that could move.
-              Pretend you were using that object as a landmark when giving someone directions.
-            </Text>
-            <EmbeddedBinary>
-              <EmbeddedMimeType>
-                <Type>image</Type>
-                <SubType>png</SubType>
-              </EmbeddedMimeType>
-              <DataURL>
-                { scala.xml.Unparsed("<![CDATA[%s]]>".format(landmarkImageUrl)) }
-              </DataURL>
-              <AltText>Image showing object to describe</AltText>
-              <Width>640</Width>
-              <Height>640</Height>
-            </EmbeddedBinary>
-          </QuestionContent>
-          <AnswerSpecification>
-            <FreeTextAnswer>
-              <Constraints>
-                <Length minLength="4" />
-              </Constraints>
-            </FreeTextAnswer>
-          </AnswerSpecification>
-        </Question>
-      </QuestionForm>
+      <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
+        <ExternalURL>
+          { scala.xml.Unparsed("<![CDATA[%s]]>".format(url)) }
+        </ExternalURL>
+        <FrameHeight>700</FrameHeight>
+      </ExternalQuestion>
 
     val questionXml = scala.xml.Utility.trim(rawQuestionXml).toString()
 
@@ -91,7 +64,8 @@ object TurkQuestionFactory {
       Constants.DESCRIPTION_ASSIGNMENT_COUNT,
       Constants.DESCRIPTION_KEYWORDS,
       questionXml,
-      Constants.SQS_HIT_DESCRIPTION_URL
+      Constants.SQS_HIT_DESCRIPTION_URL,
+      assingmentDuration = Constants.DESCRIPTION_DURATION
     )
   }
 
@@ -157,7 +131,8 @@ object TurkQuestionFactory {
       Constants.VERIFICATION_ASSIGNMENT_COUNT,
       Constants.VERIFICATION_KEYWORDS,
       questionXml,
-      Constants.SQS_HIT_VERIFICATION_URL
+      Constants.SQS_HIT_VERIFICATION_URL,
+      assingmentDuration = Constants.VERIFICATION_DURATION
     )
   }
 }

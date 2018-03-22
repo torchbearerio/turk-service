@@ -73,5 +73,6 @@ var handleSelectionChanged = function (img, selection, position) {
 
     if (selectionCount === selections.length) {
         btn.prop("disabled", false);
+        btn.val("Submit");
     }
 };

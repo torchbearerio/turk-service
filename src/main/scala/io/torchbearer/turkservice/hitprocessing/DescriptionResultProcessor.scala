@@ -51,6 +51,12 @@ object DescriptionResultProcessor {
     // Update hit cost
     Hit.incrementCost(landmark.hitId, (verificationQuestion.reward * 100).toInt)
 
+    // Update end time of description task
+    Hit.setEndTimeForTask(landmark.hitId, "turk_description", System.currentTimeMillis)
+
+    // Update start time of verification task
+    Hit.setStartTimeForTask(landmark.hitId, "turk_verification", System.currentTimeMillis)
+
     // Update landmark with this verification external hit id
     Landmark.updateVerificationHitIdForLandmark(landmark.landmarkId, verificationQuestion.mechTurkHitId)
   }

@@ -86,8 +86,12 @@ object SaliencyResultProcessor {
       case e: Throwable => hit.currentTaskToken map
         (t => {
           e.printStackTrace()
-          Task sendFailure("Turk Service Error", e.getMessage)
+          Task sendFailure(t, "Turk Service Error", e.getMessage)
         })
+    }
+
+    finally {
+      Hit.setEndTimeForTask(hit.hitId, "turk_saliency", System.currentTimeMillis)
     }
 
     // NOTE: This legacy code finds landmarks by building a graph from the rectangles

@@ -14,6 +14,8 @@ class TurkDescriptionTask(epId: Int, hitId: Int, taskToken: String)
     try {
       println(s"Creating description task for hit $hitId")
 
+      Hit.setStartTimeForTask(hitId, "turk_description", System.currentTimeMillis)
+
       // Get landmarks for hit
       val landmarks = Landmark.getLandmarksForHit(hitId)
 

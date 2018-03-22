@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>Description</title>
+    <script src="/static/scripts/description.js">Function()</script>
+    <script type="text/javascript">
+        window.previewMode = '{{assignmentId}}' === 'ASSIGNMENT_ID_NOT_AVAILABLE';
+    </script>
+</head>
+
+<body>
+<div id="top">
+    Provide a specific description of the main object in the <span style="color: red;">RED BOX</span>.
+    <br />
+    Describe PERMANENT, man-made things--<strong>NOT</strong> cars, people or things that could move.
+    <br />
+    Pretend you were using that object as a landmark when giving someone directions.
+    <br/>
+    <br/>
+</div>
+
+<img id="markedImage" src="{{imageUrl}}"/>
+
+<form class="turkForm right" action="{{submitURL}}" method="POST">
+    <input type="hidden" name="assignmentId" value="{{assignmentId}}"/>
+    <label for="description"><strong>The landmark or thing in the RED BOX is a:</strong></label>
+    <input type="text" id="description" name="description" value="" autofocus="autofocus" />
+    <input type="submit" id="submitBtn" class="button blue" disabled="disabled" value="Enter a description to submit"/>
+</form>
+
+<div class="clear"></div>
+Ø
+</body>
+</html>

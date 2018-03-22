@@ -14,7 +14,7 @@ sealed class TurkQuestion(val internalIdentifier: String,
                           val keywords: String,
                           var questionXml: String,
                           var sqsUrl: String,
-                          val autoApprovalDelay: Long = 172800,
+                          val autoApprovalDelay: Long = 43200,
                           val assingmentDuration: Long = 120,
                           val hitDuration: Long = Constants.INITIAL_HIT_LIFETIME,
                           val qualificationRequirements: List[QualificationRequirement] = List()) {

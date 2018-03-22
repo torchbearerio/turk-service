@@ -62,6 +62,9 @@ object VerificationResultProcessor {
     if (incompleteLandamrks.isEmpty) {
       // Send task success
       Task.sendSuccess(taskToken, "epId" -> hit.executionPointId, "hitId" -> hit.hitId)
+
+      // Update verification task end time
+      Hit.setEndTimeForTask(hit.hitId, "turk_verification", System.currentTimeMillis)
     }
   }
 }
