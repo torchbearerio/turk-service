@@ -16,7 +16,7 @@ object Constants {
   // Turk Questions
   val EXTERNAL_QUESTION_BASE_URL: String = if (sys.env.getOrElse("ENVIRONMENT", "production") == "development")
    // "https://torchbearer.dev/question"
-    "https://f4c3cbf9.ngrok.io/question"
+    "https://be551d40.ngrok.io/question"
   else
     "https://turkservice.torchbearer.io/question"
 
@@ -34,7 +34,7 @@ object Constants {
   val SALIENCY_INTERNAL_IDENTIFIER = "saliency"
   val SALIENCY_TITLE = "Landmark selection: draw boxes around landmarks in 3 images"
   val SALIENCY_DESCRIPTION = "Draw a box around the most prominent feature in 3 images"
-  val SALIENCY_ASSIGNMENT_COUNT = 1
+  val SALIENCY_ASSIGNMENT_COUNT = 3
   val SALIENCY_REWARD = 0.05
   val SALIENCY_KEYWORDS = "image annotation,image tagging,directions,navigation,object detection,draw"
   val SALIENCY_DURATION: Int = 10 * 60
@@ -52,7 +52,7 @@ object Constants {
   val VERIFICATION_INTERNAL_IDENTIFIER = "verification"
   val VERIFICATION_TITLE = "Landmark Image Description Verification"
   val VERIFICATION_DESCRIPTION = "Decide whether the description of an image is accurate"
-  val VERIFICATION_ASSIGNMENT_COUNT = 1
+  val VERIFICATION_ASSIGNMENT_COUNT = 3
   val VERIFICATION_REWARD = 0.03
   val VERIFICATION_KEYWORDS = "image annotation,image tagging,directions,navigation"
   val VERIFICATION_DURATION: Int = 3 * 60
