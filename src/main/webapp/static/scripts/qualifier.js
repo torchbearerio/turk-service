@@ -8,16 +8,12 @@ function setButtonText(t) {
     $('.nextButton').text(t);
 }
 
-function disableNextButton() {
-    $('.nextButton').prop('disabled', true);
-}
-
 function goToSlide(n) {
     slides.css('display', 'none');
     slides.eq(n).css('display', 'block');
 
     if (n === slides.length - 1) {
-        setButtonText("Do your first HIT!")
+        setButtonText("Done! (close window)")
     } else {
         setButtonText("Next")
     }
@@ -25,10 +21,7 @@ function goToSlide(n) {
 
 function handleClick () {
     if (currentSlide === (slides.length - 1)) {
-        setButtonText("Loading...");
-        disableNextButton();
-        Cookies.set('torchbearer_qualified_' + window.hitType, 'true');
-        window.location.reload();
+        window.close();
     } else {
         goToSlide(++currentSlide);
     }

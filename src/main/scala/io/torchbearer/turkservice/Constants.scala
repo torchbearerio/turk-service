@@ -1,5 +1,7 @@
 package io.torchbearer.turkservice
 
+import com.amazonaws.services.mturk.model.{Comparator, QualificationRequirement}
+
 /**
   * Created by fredricvollmer on 10/30/16.
   */
@@ -16,7 +18,7 @@ object Constants {
   // Turk Questions
   val EXTERNAL_QUESTION_BASE_URL: String = if (sys.env.getOrElse("ENVIRONMENT", "production") == "development")
    // "https://torchbearer.dev/question"
-    "https://be551d40.ngrok.io/question"
+    "https:////f4496494.ngrok.io/question"
   else
     "https://turkservice.torchbearer.io/question"
 
@@ -38,6 +40,16 @@ object Constants {
   val SALIENCY_REWARD = 0.05
   val SALIENCY_KEYWORDS = "image annotation,image tagging,directions,navigation,object detection,draw"
   val SALIENCY_DURATION: Int = 10 * 60
+  val SALIENCY_QUALIFICATION_REQUIREMENT: QualificationRequirement = new QualificationRequirement()
+    .withComparator(Comparator.GreaterThanOrEqualTo)
+    .withIntegerValues(80)
+    .withRequiredToPreview(false)
+    .withQualificationTypeId(
+      if (sys.env.getOrElse("TURK_SANDBOX", "false").toBoolean)
+        "33I33DLPESWBJKNIXPOVUXVSEI3Q89"  // Sandbox Qualification Type ID
+      else
+        "3SFGOZQ0QPFKL5UBZSXT9O4QI9RC6X"  // Production Qualification Type ID
+    )
 
   // Description Questions
   val DESCRIPTION_INTERNAL_IDENTIFIER = "description"
@@ -47,6 +59,16 @@ object Constants {
   val DESCRIPTION_REWARD = 0.10
   val DESCRIPTION_KEYWORDS = "image annotation,image tagging,directions,navigation"
   val DESCRIPTION_DURATION: Int = 10 * 60
+  val DESCRIPTION_QUALIFICATION_REQUIREMENT: QualificationRequirement = new QualificationRequirement()
+    .withComparator(Comparator.GreaterThanOrEqualTo)
+    .withIntegerValues(80)
+    .withRequiredToPreview(false)
+    .withQualificationTypeId(
+      if (sys.env.getOrElse("TURK_SANDBOX", "false").toBoolean)
+        "3QG4W3BIF5S16O68F0CK4J39REJNWY"  // Sandbox Qualification Type ID
+      else
+        "38ASA1XP523DZ6UXXXKGW6EVPFZHGD"  // Production Qualification Type ID
+    )
 
   // Verification Questions
   val VERIFICATION_INTERNAL_IDENTIFIER = "verification"

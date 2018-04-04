@@ -1,9 +1,11 @@
 import org.scalatra._
 import javax.servlet.ServletContext
+
 import _root_.akka.actor.ActorSystem
 import io.torchbearer.ServiceCore.TorchbearerDB
-import io.torchbearer.turkservice.servlets.{InternalServlet, QuestionServlet}
+import io.torchbearer.turkservice.servlets.{InternalServlet, QuestionServlet, TrainingServlet}
 import io.torchbearer.turkservice.polling._
+
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
 
@@ -18,6 +20,7 @@ class ScalatraBootstrap extends LifeCycle {
 
     // Start REST servers
     context.mount(new QuestionServlet(system), "/question/*")
+    context.mount(new TrainingServlet(system), "/training/*")
     context.mount(new InternalServlet(system), "/internal/*")
 
     // Start StepFunction workers for saliency and description tasks

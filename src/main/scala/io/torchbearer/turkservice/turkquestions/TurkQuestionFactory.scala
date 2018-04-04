@@ -36,7 +36,8 @@ object TurkQuestionFactory {
       Constants.SALIENCY_KEYWORDS,
       questionXml,
       Constants.SQS_HIT_SALIENCY_URL,
-      assingmentDuration = Constants.SALIENCY_DURATION
+      assingmentDuration = Constants.SALIENCY_DURATION,
+      qualificationRequirements = List(Constants.SALIENCY_QUALIFICATION_REQUIREMENT)
     )
   }
 
@@ -65,7 +66,8 @@ object TurkQuestionFactory {
       Constants.DESCRIPTION_KEYWORDS,
       questionXml,
       Constants.SQS_HIT_DESCRIPTION_URL,
-      assingmentDuration = Constants.DESCRIPTION_DURATION
+      assingmentDuration = Constants.DESCRIPTION_DURATION,
+      qualificationRequirements = List(Constants.DESCRIPTION_QUALIFICATION_REQUIREMENT)
     )
   }
 
